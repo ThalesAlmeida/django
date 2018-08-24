@@ -1,0 +1,2 @@
+class RecadastramentoException(Exception):
+    pass

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+
+{% block title %} Formulário Recadastramento {% endblock %}
+
+{% block main %}
+<div>
+        <form class="form-group" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.errors }}
+                {% bootstrap_form form %}
+                <input type="submit" class="btn btn-success" value="Enviar">
+        </form>
+</div>
+
+
+<script>
+        function abrirAbaContato(){
+                $('#contato-tab').tab('show')
+        }
+
+        function abrirAbaDocumento(){
+                $('#documento-tab').tab('show')
+        }
+</script>
+
+{% endblock %}
+
+
+{% block footer %}
+
+{% endblock %}

@@ -1,0 +1,67 @@
+version: '2'
+
+volumes:
+  dados:
+  media:
+  static:
+
+# networks:
+#   traefik:
+#     external: true
+
+services:
+
+  postgres:
+    image: postgres:10.4
+    volumes:
+      - dados:/var/lib/postgresql/data
+    ports:
+        - 5436:5432
+    environment:
+      POSTGRES_DB: recadastramento
+      POSTGRES_PASSWORD: postgres
+
+  uwsgi:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-uwsgi
+      args:
+        RECAD_ENV: dev
+    # command: python manage.py runserver 0.0.0.0:8000
+    image: recadastramento-uwsgi
+    ports:
+      # - 8000:8000
+      - 8000
+    volumes:
+      - ./src:/app/src:Z
+      - ./conf/uwsgi.yml:/app/uwsgi.yml:Z
+      - media:/app/media
+      - static:/app/static
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+
+  nginx:
+    image: nginx:1.15.2
+    ports:
+        - 8081:80
+    environment:
+      POSTGRES_DB: recadastramento
+      POSTGRES_PASSWORD: postgres
+    labels:
+      - "traefik.backend=nginx"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:recadastramento.defensoria.to.def.br"
+      - "traefik.docker.network=traefik"
+      - "traefik.enable=true"
+    volumes:
+      - ./conf/nginx-dev.conf:/etc/nginx/conf.d/default.conf
+      - static:/app/static
+      - media:/app/media
+    networks:
+      - default
+    depends_on:
+      - uwsgi
+      # - traefik

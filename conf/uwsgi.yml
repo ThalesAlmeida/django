@@ -1,0 +1,11 @@
+uwsgi:
+    master: 1
+    workers: 2
+    threads: 2
+    socket: 0.0.0.0:8000
+    # logto: /app/logs/wsgi.log
+    wsgi-file: /app/src/recadastramento/wsgi.py
+    optimize: 1
+    worker-reload-mercy: 2
+    py-autoreload: 1
+    post-buffering: 1

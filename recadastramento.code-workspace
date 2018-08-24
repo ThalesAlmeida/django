@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "Recadastramento",
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.venvPath": "~/.pyenv",
+
+		// Path to Python, you can use a custom version of Python by modifying this setting to include the full path.
+		"python.pythonPath": "~/.pyenv/versions/recadastramento/bin/python",
+
+		// Linting
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": false,
+		"python.linting.flake8Enabled": true,
+		"python.linting.flake8Path": "~/.pyenv/versions/recadastramento/bin/flake8",
+
+		// Formating
+		"python.formatting.provider": "autopep8",
+		"python.formatting.autopep8Args": ["--global-config", "${workspaceRoot}/setup.cfg"]
+	}
+}

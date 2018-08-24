@@ -1,0 +1,32 @@
+version: '2'
+
+volumes:
+  dados:
+
+services:
+  postgres:
+    image: postgres:10.4
+    volumes:
+      - dados:/var/lib/postgresql/data
+    ports:
+        - 5436:5432
+    environment:
+      POSTGRES_DB: recadastramento
+      POSTGRES_PASSWORD: postgres
+  web:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-uwsgi
+      args:
+        RECAD_ENV: dev
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./src:/app/src:Z
+      - ./conf/uwsgi.yml:/app/uwsgi.yml:Z
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      - postgres

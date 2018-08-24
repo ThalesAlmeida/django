@@ -1,0 +1,46 @@
+FROM python:3.6.6-slim
+
+ARG RECAD_ENV=dev
+ARG PIP_URL=pypi.defensoria.to.gov.br
+ARG PIP_INDEX_URL=http://root:test@$PIP_URL:4040/root/pypi/+simple/
+
+# Instala dependências do SO para compilar demais dependências
+RUN apt-get update && \
+    apt install -y build-essential
+
+# Cria estrutura de diretórios
+RUN mkdir /app && \
+    mkdir -p /app/src && \
+    mkdir -p /app/media && \
+    mkdir -p /app/static
+
+# Instala dependências
+RUN pip install -i $PIP_INDEX_URL --trusted-host $PIP_URL --extra-index-url https://pypi.python.org/simple pip
+COPY requirements/*.txt /app/
+RUN pip install -i $PIP_INDEX_URL --trusted-host $PIP_URL --extra-index-url https://pypi.python.org/simple -r /app/requirements-$RECAD_ENV.txt
+
+# Limpa arquivos desnecessários
+RUN rm -rf /var/lib/apt/lists/* && \
+    apt-get purge -y --auto-remove build-essential && \
+        find /usr/local -depth \
+            \( \
+                \( -type d -a -name test -o -name tests \) \
+                -o \
+                \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+            \) -exec rm -rf '{}' +
+
+# Copia código para dentro do container
+COPY src/. /app/src
+COPY conf/. /app/
+
+# Configura usuário recadastramento
+RUN useradd -m -s /bin/bash -u 1000 recadastramento && echo "recadastramento:recadastramento" | chpasswd && \
+    chown -R recadastramento:recadastramento /app
+
+USER recadastramento
+
+WORKDIR /app/src
+
+EXPOSE 8000
+
+CMD ["uwsgi",  "--yaml",  "/app/uwsgi.yml"]

@@ -1,0 +1,9 @@
+FROM nginx:1.15.2
+
+ARG RECAD_ENV=prod
+
+RUN mkdir -p /app/src && \
+    mkdir -p /app/logs
+
+# COPY . /app/src
+COPY conf/nginx-$RECAD_ENV.conf /etc/nginx/conf.d/default.conf

@@ -1,0 +1,7 @@
+docker-compose.yml
+Dockerfile*
+flake8.out
+.git
+.gitignore
+README.md
+recadastramento.code-workspace
